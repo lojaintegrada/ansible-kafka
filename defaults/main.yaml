@@ -51,6 +51,8 @@ kafka_advertised_listener_protocol: "{{ kafka_listener_protocol }}"
 kafka_advertised_listener_hostname: "{{ kafka_listener_hostname }}"
 kafka_advertised_listener_port: "{{ kafka_listener_port }}"
 
+kafka_sasl_plain_enabled: false
+
 # The number of threads handling network requests
 kafka_num_network_threads: 3
 # The number of threads that the server uses for processing requests, which may include disk I/O
