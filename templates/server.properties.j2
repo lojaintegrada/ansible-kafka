@@ -44,16 +44,38 @@ background.threads={{ kafka_background_threads }}
 #   EXAMPLE:
 #     listeners = PLAINTEXT://your.host.name:9092
 #listeners=PLAINTEXT://:9092
-listeners={{ kafka_listener_protocol }}://{{ kafka_listener_hostname }}:{{ kafka_listener_port }}
+{% if kafka_sasl_plain_enabled %}
+listeners=SASL_PLAINTEXT://{{ kafka_listener_hostname }}:{{ kafka_listener_port }}
+{% else %}
+listeners=PLAINTEXT://{{ kafka_listener_hostname }}:{{ kafka_listener_port }}
+{% endif %}
 
 # Hostname and port the broker will advertise to producers and consumers. If not set,
 # it uses the value for "listeners" if configured.  Otherwise, it will use the value
 # returned from java.net.InetAddress.getCanonicalHostName().
 #advertised.listeners=PLAINTEXT://your.host.name:9092
-advertised.listeners={{ kafka_advertised_listener_protocol }}://{{ kafka_advertised_listener_hostname }}:{{ kafka_advertised_listener_port }}
+{% if kafka_sasl_plain_enabled %}
+advertised.listeners=SASL_PLAINTEXT://{{ kafka_listener_hostname }}:{{ kafka_listener_port }}
+{% else %}
+advertised.listeners=PLAINTEXT://{{ kafka_advertised_listener_hostname }}:{{ kafka_advertised_listener_port }}
+{% endif %}
 
 # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
 #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+{% if kafka_sasl_plain_enabled %}
+listener.security.protocol.map=SASL_PLAINTEXT:SASL_PLAINTEXT
+
+listener.name.sasl_plaintext.plain.sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username="{{ kafka_vault.kafka_admin_user }}" password="{{ kafka_vault.kafka_admin_password }}" user_admin="{{ kafka_vault.kafka_admin_password }}";
+super.users=User:admin
+
+authorizer.class.name=kafka.security.authorizer.AclAuthorizer
+
+sasl.enabled.mechanisms=PLAIN
+sasl.mechanism.inter.broker.protocol=PLAIN
+
+inter.broker.listener.name=SASL_PLAINTEXT
+#security.inter.broker.protocol=SASL_PLAINTEXT
+{% endif %}
 
 # The number of threads that the server uses for receiving requests from the network and sending responses to the network
 num.network.threads={{ kafka_num_network_threads }}
