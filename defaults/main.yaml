@@ -29,6 +29,10 @@ kafka_broker_id: 0
 # The Java heap size (memory) allocation (xmx, xms)
 kafka_java_heap: "-Xms1G -Xmx1G"
 
+kafka_jmx_enabled: false
+kafka_jmx_port: 5556
+kafka_jmx_opts: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+
 # The number of threads to use for various background processing tasks
 kafka_background_threads: 10
 

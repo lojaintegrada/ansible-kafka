@@ -9,8 +9,10 @@ Type=simple
 StandardOutput=null
 Environment="KAFKA_HEAP_OPTS={{ kafka_java_heap }}"
 Environment="LOG_DIR={{ kafka_log_dir }}"
-Environment="JMX_PORT=5556"
-Environment="KAFKA_JMX_OPTS=-Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka-{{ hostvars[private_dns_name]['tags']['Broker_Id'] }}.devqa.li.internal -Dcom.sun.management.jmxremote.rmi.port=5556 "
+{% if kafka_jmx_enabled %}
+Environment="JMX_PORT={{ kafka_jmx_port }}"
+Environment="KAFKA_JMX_OPTS={{ kafka_jmx_opts }}"
+{% endif %}
 ExecStart={{ kafka_dir }}/bin/kafka-server-start.sh /etc/kafka/server.properties
 ExecStop={{ kafka_dir }}/bin/kafka-server-stop.sh
 User={{ kafka_user }}
